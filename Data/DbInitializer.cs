@@ -1,27 +1,45 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace PlayerRoster.Server.Data
+public static class DbInitializer
 {
-    public static class DbInitializer
+    public static async Task SeedAdminUserAsync(IServiceProvider serviceProvider)
     {
-        public static async Task SeedAdminUserAsync(IServiceProvider services)
+        try
         {
-            var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            var username = Environment.GetEnvironmentVariable("ADMIN_USER") ?? "admin";
-            var password = Environment.GetEnvironmentVariable("ADMIN_PASSWORD") ?? "admin123";
+            string adminUser = Environment.GetEnvironmentVariable("ADMIN_USER") ?? "admin";
+            string adminPass = Environment.GetEnvironmentVariable("ADMIN_PASSWORD") ?? "admin123";
 
-            if (await userManager.FindByNameAsync(username) == null)
+            if (!await roleManager.RoleExistsAsync("Admin"))
+                await roleManager.CreateAsync(new IdentityRole("Admin"));
+
+            var user = await userManager.FindByNameAsync(adminUser);
+            if (user == null)
             {
-                var user = new IdentityUser
+                user = new IdentityUser
                 {
-                    UserName = username,
-                    Email = $"{username}@example.com",
+                    UserName = adminUser,
+                    Email = $"{adminUser}@example.com",
                     EmailConfirmed = true
                 };
 
-                await userManager.CreateAsync(user, password);
+                var result = await userManager.CreateAsync(user, adminPass);
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(user, "Admin");
+                    Console.WriteLine("✅ Admin user seeded.");
+                }
+                else
+                {
+                    Console.WriteLine("❌ Failed to seed admin user: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("❌ Admin seeding error: " + ex.Message);
         }
     }
 }
