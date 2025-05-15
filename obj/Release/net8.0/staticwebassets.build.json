@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "YZQEQMoOficgVVJm9rcYbEoj1uMheKBARz02GNvi2lU=",
+  "Source": "PlayerRoster.Server",
+  "BasePath": "_content/PlayerRoster.Server",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

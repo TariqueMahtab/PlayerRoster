@@ -1,0 +1,16 @@
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
+namespace PlayerRoster.Server.Data.Models
+{
+    public class ApplicationDbContext : IdentityDbContext
+    {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+        }
+
+        public DbSet<Team> Teams { get; set; } = null!;
+        public DbSet<Player> Players { get; set; } = null!;
+    }
+}
