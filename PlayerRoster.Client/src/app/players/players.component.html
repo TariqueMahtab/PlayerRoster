@@ -1,0 +1,75 @@
+<app-navbar></app-navbar>
+
+<div class="players-container">
+  <div *ngIf="loading" class="loading">Loading players…</div>
+  <div *ngIf="error" class="error">Error: {{ error }}</div>
+
+  <!-- Sorting Controls -->
+  <div class="sort-controls">
+    <label for="sortField">Sort by:</label>
+    <select id="sortField" [(ngModel)]="sortField" (change)="applySort()">
+      <option value="fullName">Name</option>
+      <option value="ppg">PPG</option>
+      <option value="rpg">RPG</option>
+      <option value="apg">APG</option>
+    </select>
+
+    <label for="sortOrder">Order:</label>
+    <select id="sortOrder" (change)="onSortOrderChange($event)">
+      <option value="true">Ascending</option>
+      <option value="false">Descending</option>
+    </select>
+  </div>
+
+  <!-- Player Form -->
+  <div class="player-form">
+    <h3>{{ editingId ? 'Edit Player' : 'Add Player' }}</h3>
+    <form (ngSubmit)="save()">
+      <input type="text" [(ngModel)]="form.fullName" name="fullName" placeholder="Full Name" required />
+      <input type="text" [(ngModel)]="form.position" name="position" placeholder="Position" required />
+      <input type="number" [(ngModel)]="form.ppg" name="ppg" placeholder="Points Per Game (PPG)" step="0.1" />
+      <input type="number" [(ngModel)]="form.rpg" name="rpg" placeholder="Rebounds Per Game (RPG)" step="0.1" />
+      <input type="number" [(ngModel)]="form.apg" name="apg" placeholder="Assists Per Game (APG)" step="0.1" />
+
+      <button type="submit">{{ editingId ? 'Update' : 'Add' }}</button>
+      <button type="button" (click)="cancelEdit()" *ngIf="editingId">Cancel</button>
+    </form>
+  </div>
+
+  <!-- Player Table -->
+  <table *ngIf="!loading && !error" class="players-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>
+          Name <span class="sort-icon">{{ getSortArrow('fullName') }}</span>
+        </th>
+        <th>Position</th>
+        <th>
+          PPG <span class="sort-icon">{{ getSortArrow('ppg') }}</span>
+        </th>
+        <th>
+          RPG <span class="sort-icon">{{ getSortArrow('rpg') }}</span>
+        </th>
+        <th>
+          APG <span class="sort-icon">{{ getSortArrow('apg') }}</span>
+        </th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of players; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ p.fullName }}</td>
+        <td>{{ p.position }}</td>
+        <td>{{ p.ppg }}</td>
+        <td>{{ p.rpg }}</td>
+        <td>{{ p.apg }}</td>
+        <td>
+          <button (click)="startEdit(p)">✏️</button>
+          <button (click)="delete(p.id)">🗑️</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
