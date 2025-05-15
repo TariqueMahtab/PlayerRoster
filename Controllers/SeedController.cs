@@ -18,8 +18,9 @@ namespace PlayerRoster.Server.Controllers
             _env = env;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Seed()
+        [HttpGet, HttpPost]
+        public async Task<IActionResult> SeedFromCsv()
+
         {
             if (_ctx.Players.Any())
                 return BadRequest("Players already seeded.");
