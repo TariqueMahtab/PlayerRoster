@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using PlayerRoster.Server.Data;
 using PlayerRoster.Server.Data.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -111,11 +110,47 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// 🔑 Seed admin user using environment variables
+// 🔐 Seed admin user (username-based login)
 using (var scope = app.Services.CreateScope())
 {
-    var services = scope.ServiceProvider;
-    await DbInitializer.SeedAdminUserAsync(services);
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    var username = "admin";
+    var password = "admin123";
+
+    if (!await roleManager.RoleExistsAsync("Admin"))
+        await roleManager.CreateAsync(new IdentityRole("Admin"));
+
+    var adminUser = await userManager.FindByNameAsync(username);
+    if (adminUser == null)
+    {
+        adminUser = new IdentityUser
+        {
+            UserName = username,
+            Email = "admin@placeholder.com",
+            EmailConfirmed = true
+        };
+
+        var result = await userManager.CreateAsync(adminUser, password);
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+            Console.WriteLine("✅ Admin user created.");
+        }
+        else
+        {
+            Console.WriteLine("❌ Failed to create admin user:");
+            foreach (var error in result.Errors)
+            {
+                Console.WriteLine($"- {error.Description}");
+            }
+        }
+    }
+    else
+    {
+        Console.WriteLine("ℹ️ Admin user already exists.");
+    }
 }
 
 app.Run();
