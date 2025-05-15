@@ -29,15 +29,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<!-- Folders so VS will show them -->
-		<Folder Include=".ebignore\" />
-		<Folder Include="PlayerRoster.Client\src\models\" />
-		<Folder Include="PlayerRoster.Client\src\environment\" />
+		<!-- Ensure folders appear in Visual Studio -->
+		<Folder Include=".ebignore/" />
+		<Folder Include="PlayerRoster.Client/src/models/" />
+		<Folder Include="PlayerRoster.Client/src/environment/" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<!-- Copy CSV to build output so it's included in Render deployment -->
-		<Content Include="Data\NbaPlayerStats.csv">
+		<!-- Ensure CSV is copied to output (important for Render) -->
+		<Content Include="Data/NbaPlayerStats.csv">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
