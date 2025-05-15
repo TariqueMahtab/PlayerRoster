@@ -8,6 +8,7 @@
 
 	<ItemGroup>
 		<!-- EF Core (net8) -->
+		<PackageReference Include="CsvHelper" Version="33.0.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0">
 			<PrivateAssets>all</PrivateAssets>
@@ -31,6 +32,14 @@
 		<!-- Folders so VS will show them -->
 		<Folder Include=".ebignore\" />
 		<Folder Include="PlayerRoster.Client\src\models\" />
+		<Folder Include="PlayerRoster.Client\src\environment\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- Copy CSV to build output so it's included in Render deployment -->
+		<Content Include="Data\NbaPlayerStats.csv">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 
 </Project>

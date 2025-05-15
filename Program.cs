@@ -8,12 +8,12 @@ using PlayerRoster.Server.Data.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Database Configuration (EF Core + SQL Server)
+// 1. Database Configuration (EF Core + Azure SQL)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 2. Identity Configuration
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+// 2. Identity Configuration (username + password only)
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.Password.RequiredLength = 6;
     options.Password.RequireNonAlphanumeric = false;
@@ -21,7 +21,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// 3. JWT Authentication Configuration
+// 3. JWT Authentication Setup
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secretKey = jwtSettings["Key"];
 var issuer = jwtSettings["Issuer"];
@@ -46,7 +46,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// 4. Swagger + JWT Setup
+// 4. Swagger with JWT Auth Support
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -84,7 +84,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// 5. CORS Policy
+// 5. CORS Policy (allow all for dev)
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -95,7 +95,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-// 6. Build & Middleware Pipeline
+// 6. Build the App and Middleware Pipeline
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -110,14 +110,14 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// 🔐 Seed admin user (username-based login)
+// 7. Seed Admin User (Username + Password only)
 using (var scope = app.Services.CreateScope())
 {
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
     var username = "admin";
-    var password = "admin123";
+    var password = "Admin123!";
 
     if (!await roleManager.RoleExistsAsync("Admin"))
         await roleManager.CreateAsync(new IdentityRole("Admin"));
@@ -125,11 +125,10 @@ using (var scope = app.Services.CreateScope())
     var adminUser = await userManager.FindByNameAsync(username);
     if (adminUser == null)
     {
-        adminUser = new IdentityUser
+        adminUser = new ApplicationUser
         {
             UserName = username,
-            Email = "admin@placeholder.com",
-            EmailConfirmed = true
+            EmailConfirmed = true // required even if Email is not used
         };
 
         var result = await userManager.CreateAsync(adminUser, password);
