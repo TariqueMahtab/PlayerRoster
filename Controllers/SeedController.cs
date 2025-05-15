@@ -37,7 +37,7 @@ namespace PlayerRoster.Server.Controllers
                 PPG = p.Points,
                 RPG = p.Rebounds,
                 APG = p.Assists,
-                TeamId = 1 
+              
             }).ToList();
 
             await _ctx.Players.AddRangeAsync(players);

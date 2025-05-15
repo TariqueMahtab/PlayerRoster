@@ -11,7 +11,7 @@ namespace PlayerRoster.Server.Data.Models
         {
         }
 
-        public DbSet<Team> Teams { get; set; } = null!;
+   
         public DbSet<Player> Players { get; set; } = null!;
     }
 }

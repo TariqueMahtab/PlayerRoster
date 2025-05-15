@@ -5,7 +5,6 @@ using PlayerRoster.Server.Data;
 using PlayerRoster.Server.Data.Models;
 using PlayerRoster.Server.DTOs;
 
-
 namespace PlayerRoster.Server.Controllers
 {
     [ApiController]
@@ -23,14 +22,14 @@ namespace PlayerRoster.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Player>>> GetAll()
         {
-            var players = await _ctx.Players.Include(p => p.Team).ToListAsync();
+            var players = await _ctx.Players.ToListAsync();
             return Ok(players);
         }
 
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Player>> GetById(int id)
         {
-            var player = await _ctx.Players.Include(p => p.Team).FirstOrDefaultAsync(p => p.Id == id);
+            var player = await _ctx.Players.FindAsync(id);
             if (player == null) return NotFound();
             return Ok(player);
         }
@@ -38,17 +37,13 @@ namespace PlayerRoster.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<Player>> Create(PlayerCreateDto dto)
         {
-            var team = await _ctx.Teams.FindAsync(dto.TeamId);
-            if (team == null) return BadRequest($"Team with ID {dto.TeamId} does not exist.");
-
             var player = new Player
             {
                 FullName = dto.FullName,
                 Position = dto.Position,
                 PPG = (float)dto.Ppg,
                 RPG = (float)dto.Rpg,
-                APG = (float)dto.Apg,
-                TeamId = dto.TeamId
+                APG = (float)dto.Apg
             };
 
             _ctx.Players.Add(player);
@@ -63,15 +58,11 @@ namespace PlayerRoster.Server.Controllers
             var player = await _ctx.Players.FindAsync(id);
             if (player == null) return NotFound();
 
-            var team = await _ctx.Teams.FindAsync(dto.TeamId);
-            if (team == null) return BadRequest($"Team with ID {dto.TeamId} does not exist.");
-
             player.FullName = dto.FullName;
             player.Position = dto.Position;
             player.PPG = (float)dto.Ppg;
             player.RPG = (float)dto.Rpg;
             player.APG = (float)dto.Apg;
-            player.TeamId = dto.TeamId;
 
             await _ctx.SaveChangesAsync();
             return NoContent();
