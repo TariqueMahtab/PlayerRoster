@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using PlayerRoster.Server.Data;
 using PlayerRoster.Server.Data.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +12,6 @@ var builder = WebApplication.CreateBuilder(args);
 // 1. Database Configuration (EF Core + SQL Server)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 
 // 2. Identity Configuration
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
@@ -21,7 +21,6 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
-
 
 // 3. JWT Authentication Configuration
 var jwtSettings = builder.Configuration.GetSection("Jwt");
@@ -111,5 +110,12 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// 🔑 Seed admin user using environment variables
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await DbInitializer.SeedAdminUserAsync(services);
+}
 
 app.Run();

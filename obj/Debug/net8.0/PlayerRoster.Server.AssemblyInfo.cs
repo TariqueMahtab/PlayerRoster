@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PlayerRoster.Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7ca9a2ae21de949c23cb0b0c6b0a5d01e2978262")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cc13c7c2555b5fafc31093684eebbc6a011f55cf")]
 [assembly: System.Reflection.AssemblyProductAttribute("PlayerRoster.Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PlayerRoster.Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
