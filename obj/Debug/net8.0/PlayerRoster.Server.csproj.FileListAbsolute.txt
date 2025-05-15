@@ -164,3 +164,4 @@ C:\failsafe\PlayerRoster\obj\Debug\net8.0\refint\PlayerRoster.Server.dll
 C:\failsafe\PlayerRoster\obj\Debug\net8.0\PlayerRoster.Server.pdb
 C:\failsafe\PlayerRoster\obj\Debug\net8.0\PlayerRoster.Server.genruntimeconfig.cache
 C:\failsafe\PlayerRoster\obj\Debug\net8.0\ref\PlayerRoster.Server.dll
+C:\failsafe\PlayerRoster\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
