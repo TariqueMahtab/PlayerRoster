@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PlayerRoster.Server.Data;
 using PlayerRoster.Server.Data.Models;
 using PlayerRoster.Server.DTOs;
 

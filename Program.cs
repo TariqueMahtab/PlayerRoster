@@ -128,18 +128,18 @@ using (var scope = app.Services.CreateScope())
         adminUser = new ApplicationUser
         {
             UserName = username,
-            EmailConfirmed = true // required even if Email is not used
+            EmailConfirmed = true 
         };
 
         var result = await userManager.CreateAsync(adminUser, password);
         if (result.Succeeded)
         {
             await userManager.AddToRoleAsync(adminUser, "Admin");
-            Console.WriteLine("✅ Admin user created.");
+            Console.WriteLine("Admin user created.");
         }
         else
         {
-            Console.WriteLine("❌ Failed to create admin user:");
+            Console.WriteLine("Failed to create admin user:");
             foreach (var error in result.Errors)
             {
                 Console.WriteLine($"- {error.Description}");
@@ -148,7 +148,7 @@ using (var scope = app.Services.CreateScope())
     }
     else
     {
-        Console.WriteLine("ℹ️ Admin user already exists.");
+        Console.WriteLine("Admin user already exists.");
     }
 }
 

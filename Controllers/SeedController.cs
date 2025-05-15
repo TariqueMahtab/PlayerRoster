@@ -44,24 +44,6 @@ namespace PlayerRoster.Server.Controllers
 
             await _ctx.Players.AddRangeAsync(players);
 
-            // Force recreate "comp" user
-            var existingComp = _ctx.Users.FirstOrDefault(u => u.UserName.ToLower() == "comp");
-            if (existingComp != null)
-                _ctx.Users.Remove(existingComp);
-
-            var compUser = new ApplicationUser
-            {
-                UserName = "comp",
-                Email = "comp@example.com",
-                NormalizedUserName = "COMP",
-                NormalizedEmail = "COMP@EXAMPLE.COM",
-                EmailConfirmed = true,
-                SecurityStamp = Guid.NewGuid().ToString()
-            };
-            compUser.PasswordHash = _passwordHasher.HashPassword(compUser, "Comp584");
-            _ctx.Users.Add(compUser);
-
-            // Add "admin" user if not exists
             if (!_ctx.Users.Any(u => u.UserName == "admin"))
             {
                 var adminUser = new ApplicationUser
