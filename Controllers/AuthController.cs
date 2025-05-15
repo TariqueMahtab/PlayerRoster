@@ -1,10 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using PlayerRoster.Server.Models;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Identity;
+using PlayerRoster.Server.Data;
+using PlayerRoster.Server.Data.Models;
+using PlayerRoster.Server.Models;
 
 namespace PlayerRoster.Server.Controllers
 {
@@ -13,34 +17,40 @@ namespace PlayerRoster.Server.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IConfiguration _config;
+        private readonly ApplicationDbContext _context;
+        private readonly IPasswordHasher<ApplicationUser> _passwordHasher;
 
-        public AuthController(IConfiguration config)
+        public AuthController(IConfiguration config, ApplicationDbContext context, IPasswordHasher<ApplicationUser> passwordHasher)
         {
             _config = config;
+            _context = context;
+            _passwordHasher = passwordHasher;
         }
 
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
-       
-            Console.WriteLine($"[Login Debug] Username: {request.Username}, Password: {request.Password}");
-
-        
-            if (request.Username != "admin" || request.Password != "admin123")
+            // Find user by username
+            var user = _context.Users.FirstOrDefault(u => u.UserName == request.Username);
+            if (user == null)
             {
-                Console.WriteLine("[Login Debug] ❌ Invalid credentials received");
                 return Unauthorized("Invalid username or password");
             }
 
-            Console.WriteLine("[Login Debug] ✅ Credentials matched, generating token...");
+            // Verify password
+            var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
+            if (result == PasswordVerificationResult.Failed)
+            {
+                return Unauthorized("Invalid username or password");
+            }
 
+            // Create JWT token
             var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
             var tokenHandler = new JwtSecurityTokenHandler();
-
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] {
-                    new Claim(ClaimTypes.Name, request.Username)
+                    new Claim(ClaimTypes.Name, user.UserName)
                 }),
                 Expires = DateTime.UtcNow.AddHours(double.Parse(_config["Jwt:ExpireHours"])),
                 SigningCredentials = new SigningCredentials(
