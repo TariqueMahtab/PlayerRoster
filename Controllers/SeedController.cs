@@ -20,7 +20,6 @@ namespace PlayerRoster.Server.Controllers
 
         [HttpGet, HttpPost]
         public async Task<IActionResult> SeedFromCsv()
-
         {
             if (_ctx.Players.Any())
                 return BadRequest("Players already seeded.");
@@ -29,9 +28,19 @@ namespace PlayerRoster.Server.Controllers
 
             using var reader = new StreamReader(filePath);
             using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
-            var allPlayers = csv.GetRecords<Player>().ToList();
+            var csvPlayers = csv.GetRecords<PlayerCsv>().ToList();
 
-            await _ctx.Players.AddRangeAsync(allPlayers);
+            var players = csvPlayers.Select(p => new Player
+            {
+                FullName = p.Name,
+                Position = p.Position,
+                PPG = p.Points,
+                RPG = p.Rebounds,
+                APG = p.Assists,
+                TeamId = 1 
+            }).ToList();
+
+            await _ctx.Players.AddRangeAsync(players);
             await _ctx.SaveChangesAsync();
 
             return Ok("CSV seeding complete.");
